@@ -1,0 +1,87 @@
+name: cycle
+
+on:
+  # Uncomment the schedule when unattended runs are wanted. A run spends the
+  # model budget, so it stays off until ANTHROPIC_API_KEY is an Actions secret
+  # and the repository variable FUND_MODE is paper.
+  # schedule:
+  #   - cron: "7 */4 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: paper, testnet, or live
+        required: false
+        type: choice
+        options:
+          - paper
+          - testnet
+          - live
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cycle
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          ref: journal
+          path: journal
+      - uses: astral-sh/setup-uv@v10
+        with:
+          python-version: "3.13"
+      - run: uv sync --locked
+      - id: trade
+        continue-on-error: true
+        env:
+          FUND_MODE: ${{ github.event.inputs.mode || vars.FUND_MODE || 'paper' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          HL_ACCOUNT_ADDRESS: ${{ secrets.HL_ACCOUNT_ADDRESS }}
+          HL_AGENT_PRIVATE_KEY_TESTNET: ${{ secrets.HL_AGENT_PRIVATE_KEY_TESTNET }}
+          HL_AGENT_PRIVATE_KEY_MAINNET: ${{ secrets.HL_AGENT_PRIVATE_KEY_MAINNET }}
+          FUND_ALLOW_MAINNET: ${{ secrets.FUND_ALLOW_MAINNET }}
+        run: uv run fund run
+      - if: always()
+        run: uv run fund score
+      - if: always()
+        run: uv run fund dashboard --out site
+      - name: Publish the journal
+        if: always()
+        working-directory: journal
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No journal changes."
+            exit 0
+          fi
+          cycle_id="$(python3 -c 'import json; from pathlib import Path; files = sorted(Path("cycles").rglob("*.json")); print("unknown" if not files else json.loads(files[-1].read_text())["cycle_id"])')"
+          git commit -m ":card_file_box: cycle ${cycle_id}"
+          git push
+      - if: always()
+        uses: actions/upload-pages-artifact@v5.0.0
+        with:
+          path: site
+      - if: steps.trade.outcome == 'failure'
+        run: exit 1
+
+  deploy:
+    needs: run
+    if: always() && needs.run.result != 'cancelled'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5.0.1
