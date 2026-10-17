@@ -650,6 +650,37 @@ def test_news_rejects_a_naive_clock() -> None:
         _run_news(Stub(), universe=[], now=naive)
 
 
+def test_news_collects_urls_nested_in_search_results() -> None:
+    transcript = {
+        "responses": [
+            {
+                "content": [
+                    {
+                        "type": "web_search_tool_result",
+                        "content": [
+                            {"type": "web_search_result", "url": "https://news.example/oil"},
+                            {"type": "web_search_result", "url": "https://news.example/oil"},
+                            {"type": "web_search_result", "title": "no url"},
+                        ],
+                    },
+                    {"type": "text", "text": "Oil rose.", "citations": None},
+                ]
+            }
+        ]
+    }
+
+    class Stub:
+        async def parse(self, **kwargs: Any) -> LlmResult[Any]:
+            raise AssertionError(kwargs)
+
+        async def search(self, **kwargs: Any) -> LlmResult[str]:
+            return LlmResult("Oil rose.", _zero("news", _model()), transcript, None)
+
+    digest, _usage, _transcript = _run_news(Stub())
+    assert digest is not None
+    assert digest.sources == ["https://news.example/oil"]
+
+
 def test_news_without_citations_has_no_sources() -> None:
     class Stub:
         async def parse(self, **kwargs: Any) -> LlmResult[Any]:

@@ -54,8 +54,7 @@ def _iso(now: datetime) -> str:
 def _sources(transcript: dict[str, Any]) -> list[str]:
     found: list[str] = []
     for blob in _response_blobs(transcript):
-        for block in _mappings(_objects(blob.get("content"))):
-            _collect_urls(block, found)
+        _walk_sources(blob, found)
     return found
 
 
@@ -79,12 +78,31 @@ def _mappings(values: list[object]) -> list[dict[str, object]]:
     return [cast(dict[str, object], value) for value in values if isinstance(value, dict)]
 
 
+def _walk_sources(value: object, found: list[str]) -> None:
+    if isinstance(value, dict):
+        block = cast(dict[str, object], value)
+        _collect_urls(block, found)
+        for child in block.values():
+            _walk_sources(child, found)
+        return
+    if isinstance(value, list):
+        for item in cast(list[object], value):
+            _walk_sources(item, found)
+
+
 def _collect_urls(block: dict[str, object], found: list[str]) -> None:
-    if block.get("type") != "text":
+    kind = block.get("type")
+    if kind == "web_search_result":
+        _remember(block.get("url"), found)
+        return
+    if kind != "text":
         return
     for citation in _mappings(_objects(block.get("citations"))):
         if citation.get("type") != "web_search_result_location":
             continue
-        url = citation.get("url")
-        if isinstance(url, str) and url not in found:
-            found.append(url)
+        _remember(citation.get("url"), found)
+
+
+def _remember(url: object, found: list[str]) -> None:
+    if isinstance(url, str) and url not in found:
+        found.append(url)
