@@ -1,0 +1,334 @@
+{% extends "base.html.j2" %}
+{% block content %}
+<header>
+  <p class="kicker">Research report</p>
+  <h1>{{ page.name }}</h1>
+  <p class="tagline">{{ page.tagline }}</p>
+  <p class="banner">
+    {% if page.mode %}<span class="badge">{{ page.mode }}</span>{% endif %}
+    {% if page.last_cycle %}<span>Last cycle {{ page.last_cycle }}</span>{% endif %}
+  </p>
+  {% if page.halt %}<p class="halt">Halted. {{ page.halt }}</p>{% endif %}
+</header>
+{% if page.empty %}
+<section>
+  <h2>No cycles yet</h2>
+  <p>The journal does not contain a cycle yet. Equity, scores, positions, and written decisions will appear here after the first cycle.</p>
+  <p>This is an experiment, not investment advice.</p>
+</section>
+{% else %}
+<section>
+  <h2>Headline numbers</h2>
+  <ul class="figures">
+    {% for item in page.headline %}
+    <li>
+      <span class="label">{{ item.label }}</span>
+      <span class="value {{ item.css_class }}">{{ item.value }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+<section>
+  <h2>Equity</h2>
+  {% if page.has_chart %}
+  <p>Each portfolio is indexed to 100 at its first point. The champion line is thicker. Baseline lines are thin and grey.</p>
+  <div class="chart"><canvas id="equity-chart"></canvas></div>
+  {% else %}
+  <p>No equity series yet.</p>
+  {% endif %}
+</section>
+<section>
+  <h2>Leaderboard</h2>
+  <p>Sorted by return after model cost.</p>
+  {% if page.leaders %}
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Portfolio</th>
+          <th>Kind</th>
+          <th class="num">Return</th>
+          <th class="num">Net of LLM cost</th>
+          <th class="num">Max drawdown</th>
+          <th class="num">Sharpe</th>
+          <th class="num">Fees</th>
+          <th class="num">Funding</th>
+          <th class="num">Cycles</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.leaders %}
+        <tr>
+          <td>{{ row.portfolio }}</td>
+          <td>{{ row.kind }}</td>
+          <td class="num {{ row.return_class }}">{{ row.total_return }}</td>
+          <td class="num {{ row.net_class }}">{{ row.net_return }}</td>
+          <td class="num {{ row.drawdown_class }}">{{ row.drawdown }}</td>
+          <td class="num">{{ row.sharpe }}</td>
+          <td class="num">{{ row.fees }}</td>
+          <td class="num">{{ row.funding }}</td>
+          <td class="num">{{ row.cycles }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No scores yet.</p>
+  {% endif %}
+</section>
+<section>
+  <h2>Calibration</h2>
+  {% if page.has_calibration %}
+  <p>Mean predicted probability against the share of outcomes that finished higher. The straight line is perfect calibration.</p>
+  <div class="chart chart-short"><canvas id="calibration-chart"></canvas></div>
+  {% else %}
+  <p>{{ page.calibration_note }}</p>
+  {% endif %}
+  {% if page.brier %}
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Config</th>
+          <th class="num">Resolved</th>
+          <th class="num">Brier</th>
+          <th class="num">Brier skill</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.brier %}
+        <tr>
+          <td>{{ row.config_id }}</td>
+          <td class="num">{{ row.resolved }}</td>
+          <td class="num">{{ row.brier }}</td>
+          <td class="num {{ row.skill_class }}">{{ row.skill }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</section>
+<section>
+  <h2>Current positions</h2>
+  <p>{{ page.account_label }}</p>
+  {% if page.positions_note %}<p>{{ page.positions_note }}</p>{% endif %}
+  {% if page.positions %}
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Market</th>
+          <th>Asset class</th>
+          <th class="num">Weight</th>
+          <th class="num">Entry</th>
+          <th class="num">Unrealised</th>
+          <th class="num">Stop</th>
+          <th>Thesis</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.positions %}
+        <tr>
+          <td>{{ row.market }}</td>
+          <td>{{ row.asset_class }}</td>
+          <td class="num {{ row.weight_class }}">{{ row.weight }}</td>
+          <td class="num">{{ row.entry }}</td>
+          <td class="num {{ row.unrealised_class }}">{{ row.unrealised }}</td>
+          <td class="num">{{ row.stop }}</td>
+          <td class="wrap">{{ row.thesis }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</section>
+<section>
+  <h2>Latest decision</h2>
+  {% if page.decision_note %}<p>{{ page.decision_note }}</p>{% endif %}
+  {% if page.market_view %}<p>{{ page.market_view }}</p>{% endif %}
+  {% if page.decisions %}
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Market</th>
+          <th class="num">Requested</th>
+          <th class="num">Approved</th>
+          <th>Status</th>
+          <th>Reasons</th>
+          <th class="num">Probability</th>
+          <th>Thesis</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.decisions %}
+        <tr>
+          <td>{{ row.market }}</td>
+          <td class="num {{ row.requested_class }}">{{ row.requested }}</td>
+          <td class="num {{ row.approved_class }}">{{ row.approved }}</td>
+          <td>{{ row.status }}</td>
+          <td>{{ row.reasons }}</td>
+          <td class="num">{{ row.probability }}</td>
+          <td class="wrap">{{ row.thesis }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  <details>
+    <summary>Reasoning summary</summary>
+    {% if page.reasoning %}
+    <p class="reasoning">{{ page.reasoning }}</p>
+    {% else %}
+    <p>No reasoning summary was recorded for this cycle.</p>
+    {% endif %}
+  </details>
+</section>
+<section>
+  <h2>Recent cycles</h2>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Mode</th>
+          <th>Summary</th>
+          <th class="num">Orders</th>
+          <th class="num">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.cycles %}
+        <tr>
+          <td><a href="{{ row.href }}">{{ row.when }}</a></td>
+          <td>{{ row.mode }}</td>
+          <td class="wrap">{{ row.summary }}</td>
+          <td class="num">{{ row.orders }}</td>
+          <td class="num">{{ row.cost }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+<section>
+  <h2>Method and caveats</h2>
+  <div class="prose">
+    <p>Evaluation is forward only. Large language models have memorised prices up to their training cutoff, so a backtest over that history would be contaminated. Removing tickers or dates does not repair it. Figures on this page start at the first published cycle.</p>
+    <p>Every configuration sees the same snapshot and the same news digest. Differences come from the configuration.</p>
+    <p>Fees, funding, and model costs are included. The leaderboard sorts by return after model cost. Sharpe is reported after 30 cycles.</p>
+    <p>Paper accounts share one fill model. When a live account is enabled, only the champion sends orders to the execution venue (Hyperliquid). Testnet uses that same path with test funds. Paper and live can differ because fills, funding, and timing differ.</p>
+    <p>Autonomy for the real venue has three modes. Paper never sends a real order. Approve prints the gated plan and waits for a person to confirm. Auto sends the gated plan without a confirmation. The default is approve.</p>
+    <p>This is an experiment, not investment advice.</p>
+  </div>
+</section>
+{% endif %}
+<footer><p>Built {{ page.built }}.</p></footer>
+{% endblock %}
+{% block scripts %}
+{% if not page.empty and (page.has_chart or page.has_calibration) %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  if (!window.Chart) {
+    return;
+  }
+  const style = getComputedStyle(document.documentElement);
+  const accent = style.getPropertyValue("--accent").trim();
+  const muted = style.getPropertyValue("--chart-muted").trim();
+  const ink = style.getPropertyValue("--muted").trim();
+  const grid = style.getPropertyValue("--line").trim();
+  const text = style.getPropertyValue("--text").trim();
+  Chart.defaults.font.family = "system-ui, sans-serif";
+  Chart.defaults.color = text;
+  const equityNode = document.getElementById("equity-chart");
+  if (equityNode) {
+    const equity = {{ page.chart | tojson }};
+    new Chart(equityNode, {
+      type: "line",
+      data: {
+        labels: equity.labels,
+        datasets: equity.datasets.map(function (row) {
+          const champion = row.role === "champion";
+          const baseline = row.role === "baseline";
+          return {
+            label: row.label,
+            data: row.data,
+            borderColor: champion ? accent : baseline ? muted : ink,
+            backgroundColor: champion ? accent : baseline ? muted : ink,
+            borderWidth: champion ? 2.5 : baseline ? 1 : 1.5,
+            pointRadius: champion ? 2 : 0,
+            spanGaps: true,
+            tension: 0,
+            fill: false
+          };
+        })
+      },
+      options: {
+        animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } },
+        scales: {
+          x: { ticks: { maxTicksLimit: 6 }, grid: { color: grid } },
+          y: { grid: { color: grid } }
+        }
+      }
+    });
+  }
+  const calibrationNode = document.getElementById("calibration-chart");
+  if (calibrationNode) {
+    const bins = {{ page.calibration | tojson }};
+    new Chart(calibrationNode, {
+      data: {
+        datasets: [
+          {
+            type: "line",
+            label: "Perfect calibration",
+            data: [{x: 0, y: 0}, {x: 1, y: 1}],
+            borderColor: muted,
+            borderWidth: 1,
+            borderDash: [4, 4],
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            type: "scatter",
+            label: "Champion",
+            data: bins.points,
+            backgroundColor: accent,
+            borderColor: accent,
+            pointRadius: 5
+          }
+        ]
+      },
+      options: {
+        animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } },
+        scales: {
+          x: {
+            min: 0,
+            max: 1,
+            title: { display: true, text: "Mean predicted probability" },
+            grid: { color: grid }
+          },
+          y: {
+            min: 0,
+            max: 1,
+            title: { display: true, text: "Observed frequency" },
+            grid: { color: grid }
+          }
+        }
+      }
+    });
+  }
+})();
+</script>
+{% endif %}
+{% endblock %}

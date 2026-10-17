@@ -1,0 +1,286 @@
+:root {
+  color-scheme: light;
+  --bg: #f4f3ef;
+  --text: #1f1e1b;
+  --muted: #5e5b55;
+  --line: #e4e1d8;
+  --accent: #2c4c6e;
+  --positive: #2c6b4a;
+  --negative: #8d3b3b;
+  --chart-muted: #8d897f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #131311;
+    --text: #eceae4;
+    --muted: #b1aca3;
+    --line: #33312c;
+    --accent: #a9c3de;
+    --positive: #93c4a8;
+    --negative: #e4b0b0;
+    --chart-muted: #908c83;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 5rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+figure {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.6rem;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h2 {
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+h3 {
+  margin: 1.75rem 0 0.6rem;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+h4 {
+  margin: 1.25rem 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.15em;
+}
+
+a:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.kicker {
+  margin-bottom: 0.45rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tagline,
+.prose {
+  max-width: 42rem;
+  color: var(--muted);
+}
+
+.tagline {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-block;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.12rem 0.45rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.halt,
+.note,
+.errors {
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem;
+}
+
+.halt,
+.errors {
+  border: 1px solid var(--negative);
+  color: var(--negative);
+}
+
+.note {
+  border-left: 3px solid var(--accent);
+  padding-left: 0.8rem;
+}
+
+.errors {
+  padding-left: 1.6rem;
+}
+
+section {
+  margin-top: 3rem;
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.4rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.figures .label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.figures .value {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1.45rem;
+}
+
+.positive {
+  color: var(--positive);
+}
+
+.negative {
+  color: var(--negative);
+}
+
+.chart {
+  position: relative;
+  height: 340px;
+  margin-top: 1rem;
+}
+
+.chart-short {
+  height: 280px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.wrap {
+  min-width: 16rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.digest,
+.reasoning {
+  white-space: pre-wrap;
+}
+
+.digest {
+  max-width: 42rem;
+}
+
+.config {
+  margin-top: 0.5rem;
+}
+
+details {
+  margin-top: 1rem;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.meta {
+  color: var(--muted);
+}
+
+.prose p + p {
+  margin-top: 0.9rem;
+}
+
+footer {
+  margin-top: 4rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 720px) {
+  main {
+    padding: 1.75rem 1rem 3rem;
+  }
+
+  h1 {
+    font-size: 1.55rem;
+  }
+
+  .figures {
+    grid-template-columns: 1fr 1fr;
+  }
+}

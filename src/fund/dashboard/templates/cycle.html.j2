@@ -1,0 +1,206 @@
+{% extends "base.html.j2" %}
+{% block content %}
+<header>
+  <p class="kicker"><a href="{{ page.asset_prefix }}index.html">{{ page.name }}</a></p>
+  <h1>Cycle {{ page.when }}</h1>
+  <p class="banner">
+    <span class="badge">{{ page.mode }}</span>
+    <span>Cycle id {{ page.cycle_id }}</span>
+  </p>
+  {% if page.errors %}
+  <ul class="errors">
+    {% for item in page.errors %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</header>
+<section>
+  <h2>Snapshot</h2>
+  <p>{{ page.session_line }}</p>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Market</th>
+          <th>Class</th>
+          <th>Status</th>
+          <th class="num">Mark</th>
+          <th class="num">24h</th>
+          <th class="num">7d</th>
+          <th class="num">30d</th>
+          <th class="num">Vol</th>
+          <th class="num">Funding</th>
+          <th class="num">Open interest</th>
+          <th class="num">Volume</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.markets %}
+        <tr>
+          <td>{{ row.market }}</td>
+          <td>{{ row.asset_class }}</td>
+          <td>{{ row.status }}</td>
+          <td class="num">{{ row.mark }}</td>
+          <td class="num {{ row.ret_24h_class }}">{{ row.ret_24h }}</td>
+          <td class="num {{ row.ret_7d_class }}">{{ row.ret_7d }}</td>
+          <td class="num {{ row.ret_30d_class }}">{{ row.ret_30d }}</td>
+          <td class="num">{{ row.vol }}</td>
+          <td class="num {{ row.funding_class }}">{{ row.funding }}</td>
+          <td class="num">{{ row.open_interest }}</td>
+          <td class="num">{{ row.volume }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+<section>
+  <h2>News digest</h2>
+  {% if page.news_text %}
+  <p class="meta">Compiled {{ page.news_compiled }}.</p>
+  <div class="digest">{{ page.news_text }}</div>
+  {% if page.sources %}
+  <h3>Sources</h3>
+  <ul>
+    {% for source in page.sources %}
+    <li>
+      {% if source.href %}
+      <a href="{{ source.href }}">{{ source.label }}</a>
+      {% else %}
+      {{ source.label }}
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% else %}
+  <p>No news digest for this cycle.</p>
+  {% endif %}
+</section>
+<section>
+  <h2>Decisions</h2>
+  {% if page.configs %}
+  {% for block in page.configs %}
+  <article class="config">
+    <h3>{{ block.config_id }}</h3>
+    {% if block.error %}<p class="note">{{ block.error }}</p>{% endif %}
+    {% if block.market_view %}<p>{{ block.market_view }}</p>{% endif %}
+    {% if block.decisions %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th class="num">Requested</th>
+            <th class="num">Approved</th>
+            <th>Status</th>
+            <th>Reasons</th>
+            <th class="num">Probability</th>
+            <th>Thesis</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in block.decisions %}
+          <tr>
+            <td>{{ row.market }}</td>
+            <td class="num {{ row.requested_class }}">{{ row.requested }}</td>
+            <td class="num {{ row.approved_class }}">{{ row.approved }}</td>
+            <td>{{ row.status }}</td>
+            <td>{{ row.reasons }}</td>
+            <td class="num">{{ row.probability }}</td>
+            <td class="wrap">{{ row.thesis }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    <h4>Orders</h4>
+    {% if block.orders %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th>Side</th>
+            <th class="num">Requested</th>
+            <th class="num">Filled</th>
+            <th class="num">Average price</th>
+            <th class="num">Fee</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in block.orders %}
+          <tr>
+            <td>{{ row.market }}</td>
+            <td>{{ row.side }}</td>
+            <td class="num">{{ row.requested }}</td>
+            <td class="num">{{ row.filled }}</td>
+            <td class="num">{{ row.price }}</td>
+            <td class="num">{{ row.fee }}</td>
+            <td>{{ row.status }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p>No orders.</p>
+    {% endif %}
+    <details>
+      <summary>Reasoning summary</summary>
+      {% if block.reasoning %}
+      <p class="reasoning">{{ block.reasoning }}</p>
+      {% else %}
+      <p>No reasoning summary was recorded for this cycle.</p>
+      {% endif %}
+    </details>
+    <p class="meta">Model cost {{ block.cost }}.</p>
+  </article>
+  {% endfor %}
+  {% else %}
+  <p>No configuration recorded a decision.</p>
+  {% endif %}
+</section>
+<section>
+  <h2>Costs</h2>
+  {% if page.costs %}
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Purpose</th>
+          <th>Model</th>
+          <th class="num">Input</th>
+          <th class="num">Output</th>
+          <th class="num">Cache write</th>
+          <th class="num">Cache read</th>
+          <th class="num">Searches</th>
+          <th class="num">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.costs %}
+        <tr>
+          <td>{{ row.purpose }}</td>
+          <td>{{ row.model }}</td>
+          <td class="num">{{ row.input_tokens }}</td>
+          <td class="num">{{ row.output_tokens }}</td>
+          <td class="num">{{ row.cache_write }}</td>
+          <td class="num">{{ row.cache_read }}</td>
+          <td class="num">{{ row.searches }}</td>
+          <td class="num">{{ row.cost }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No model costs were recorded.</p>
+  {% endif %}
+  <p>Total {{ page.cost_total }}.</p>
+</section>
+<footer><p>Built {{ page.built }}.</p></footer>
+{% endblock %}
