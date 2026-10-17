@@ -1,0 +1,26 @@
+[
+  {
+    "universe": [
+      {"name": "xyz:SP500", "szDecimals": 3, "maxLeverage": 20, "onlyIsolated": true},
+      {"name": "xyz:CL", "szDecimals": 2, "maxLeverage": 10, "onlyIsolated": true}
+    ]
+  },
+  [
+    {
+      "markPx": "5610.0",
+      "oraclePx": "5608.0",
+      "prevDayPx": "5550.0",
+      "funding": "0.000001",
+      "openInterest": "80",
+      "dayNtlVlm": "900000"
+    },
+    {
+      "markPx": "70.5",
+      "oraclePx": "70.4",
+      "prevDayPx": "71.0",
+      "funding": "0.000002",
+      "openInterest": "40",
+      "dayNtlVlm": "1200"
+    }
+  ]
+]

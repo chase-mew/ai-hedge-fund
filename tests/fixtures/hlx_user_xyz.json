@@ -1,0 +1,11 @@
+{
+  "marginSummary": {
+    "accountValue": "1000.5",
+    "totalMarginUsed": "0",
+    "totalNtlPos": "1122",
+    "totalRawUsd": "1000.5"
+  },
+  "assetPositions": [
+    {"type": "oneWay", "position": {"coin": "xyz:SP500", "szi": "-0.2", "entryPx": null}}
+  ]
+}

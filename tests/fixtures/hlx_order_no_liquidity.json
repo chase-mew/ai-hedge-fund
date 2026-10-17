@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {"error": "Order could not immediately match against any resting orders. asset=0"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {"error": "Order must have minimum value of $10."}
+      ]
+    }
+  }
+}

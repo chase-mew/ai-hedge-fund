@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {"filled": {"totalSz": "0.004", "avgPx": "76000", "oid": 4243}}
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "marginSummary": {
+    "accountValue": "1000.5",
+    "totalMarginUsed": "10",
+    "totalNtlPos": "800",
+    "totalRawUsd": "1000.5"
+  },
+  "assetPositions": [
+    {"type": "oneWay", "position": {"coin": "BTC", "szi": "0.01", "entryPx": "79000"}},
+    {"type": "oneWay", "position": {"coin": "ETH", "szi": "0", "entryPx": "3000"}}
+  ]
+}

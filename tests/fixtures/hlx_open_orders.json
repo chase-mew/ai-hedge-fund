@@ -1,0 +1,24 @@
+[
+  {
+    "coin": "BTC",
+    "oid": 555,
+    "side": "A",
+    "sz": "0.01",
+    "origSz": "0.01",
+    "isTrigger": true,
+    "reduceOnly": true,
+    "triggerPx": "76000",
+    "limitPx": "68400",
+    "orderType": "Stop Market"
+  },
+  {
+    "coin": "BTC",
+    "oid": 556,
+    "side": "B",
+    "sz": "0.01",
+    "isTrigger": false,
+    "reduceOnly": false,
+    "limitPx": "79000",
+    "orderType": "Limit"
+  }
+]
