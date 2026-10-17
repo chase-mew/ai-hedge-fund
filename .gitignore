@@ -8,7 +8,7 @@ debug.txt
 .ruff_cache/
 .coverage
 htmlcov/
-journal/
+/journal/
 site/
 dist/
 BUILD_PLAN.md
