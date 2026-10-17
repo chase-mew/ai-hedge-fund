@@ -41,6 +41,7 @@ venv = ".venv"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-m 'not live'"
 markers = ["live: calls real network APIs; run with: uv run pytest -m live"]
 
