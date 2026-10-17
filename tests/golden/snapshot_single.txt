@@ -1,0 +1,30 @@
+CYCLE 2026-10-19T12:00Z (UTC)
+US market session: OPEN. Pre weekend window: no.
+
+PORTFOLIO
+Equity $10,321.40 | day start $10,250.00 | high water $10,402.10
+Gross 0.17 | net +0.07
+symbol   weight     entry      mark unrealised
+xyz:GOLD  +0.12  4,120.00  4,159.60     +0.96%
+BTC       -0.05 81,900.00 81,491.00     +0.50%
+
+MARKETS
+symbol    name    class        status      mark  24h%   7d%  30d% vol30d% vs20dHigh% vs20dLow% vsSMA20% vsSMA50% fundAnn%   OI$m vol24h$m
+xyz:SP500 S&P 500 equity_index OPEN    7,639.40 +0.42 +1.10 +2.95    14.2      -0.80     +4.10    +1.20    +2.80     +5.5  120.3    103.0
+xyz:GOLD  Gold    commodity    CLOSED  4,159.60 +0.96 +0.00 +0.00    16.0      -1.00     +4.00    +1.00    +0.00     +0.0   50.0     20.0
+BTC       Bitcoin crypto       OPEN   81,491.00 -0.50 +0.00 +0.00    48.0      -1.00     +4.00    -2.00    +0.00     +0.0 2500.0    800.0
+
+DAILY CLOSES, LAST 10 DAYS (oldest to newest)
+xyz:SP500: 7,512.10, 7,530.40, 7,600.00, 7,610.00, 7,620.00, 7,630.00, 7,639.40
+xyz:GOLD: 4,100.00, 4,159.60
+BTC: 81,900.00, 81,491.00
+
+YOUR RECENT DECISIONS (oldest to newest)
+2026-10-18T00:00Z BTC target +0.04 p_up 0.55 "Bitcoin still above its longer average." Price then 82,000.00, now 81,491.00 (-0.62%).
+2026-10-18T12:00Z xyz:GOLD target +0.12 p_up 0.62 "Gold holding above its 20 day average while real yields fall." Price then 4,120.00, now 4,159.60 (+0.96%).
+2026-10-19T08:00Z BTC target -0.05 p_up 0.42 "Bitcoin slipped under its 20 day average." Price then 81,900.00, now 81,491.00 (-0.50%).
+Forecast record: 132 resolved, Brier 0.244 (0.250 is no skill).
+
+NEWS DIGEST (untrusted, compiled 2026-10-19T11:58Z)
+Macro
+The Federal Reserve left rates unchanged.
