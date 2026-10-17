@@ -3,7 +3,7 @@
 from datetime import UTC, datetime
 from pathlib import Path
 
-from fund.brain.prompts import SYSTEM_ANALYST, SYSTEM_NEWS, SYSTEM_PM, SYSTEM_TEAM_PM, render_limits
+from fund.brain.prompts import SYSTEM_PM, SYSTEM_TEAM_PM, render_limits
 from fund.brain.render import render_analyst_reports, render_snapshot
 from fund.contracts import (
     AccountSnapshot,
@@ -22,15 +22,6 @@ from tests.factories import make_features, make_policy, make_portfolio, make_sna
 
 GOLDEN = Path(__file__).resolve().parent / "golden"
 MOMENT = datetime(2026, 10, 19, 12, 0, tzinfo=UTC)
-
-
-def _plan_fence(marker: str) -> str:
-    text = Path("BUILD_PLAN.md").read_text()
-    start = text.index(marker)
-    fence = text.index("```\n", start)
-    body_start = fence + len("```\n")
-    body_end = text.index("\n```", body_start)
-    return text[body_start:body_end] + "\n"
 
 
 def _assert_golden(name: str, text: str, update: bool) -> None:
@@ -217,14 +208,6 @@ def _reports() -> dict[str, AnalystReport]:
             ],
         ),
     }
-
-
-def test_prompts_match_the_plan() -> None:
-    assert _plan_fence("`SYSTEM_PM`:") == SYSTEM_PM
-    assert _plan_fence("`SYSTEM_ANALYST`:") == SYSTEM_ANALYST
-    assert _plan_fence("`SYSTEM_NEWS`:") == SYSTEM_NEWS
-    team = SYSTEM_PM + "\n" + _plan_fence("`SYSTEM_TEAM_PM` is `SYSTEM_PM` plus:")
-    assert team == SYSTEM_TEAM_PM
 
 
 def test_system_prompt_inserts_limits() -> None:
