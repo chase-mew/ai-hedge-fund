@@ -36,7 +36,7 @@ jobs:
         with:
           ref: journal
           path: journal
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.0
         with:
           python-version: "3.13"
       - run: uv sync --locked
