@@ -1,0 +1,149 @@
+[fund]
+name = "AI Hedge Fund"
+cycle_hours = 4
+paper_starting_equity = 10000.0
+daily_llm_budget_usd = 6.0
+journal_dir = "journal"
+autonomy = "approve"            # paper | approve | auto (real venue only; the user changes this)
+
+[models]
+champion = "opus-5.5/single"
+shadows = ["opus-5.5/team", "sonnet-5.5/single", "haiku-5.5/single"]
+
+[models.catalog."opus-5.5"]
+id = "claude-opus-5-5"
+effort = "medium"
+summarized_thinking = true
+max_tokens = 16000
+input_per_mtok = 4.0
+output_per_mtok = 20.0
+cache_write_per_mtok = 5.0
+cache_read_per_mtok = 0.40
+
+[models.catalog."sonnet-5.5"]
+id = "claude-sonnet-5-5"
+effort = "medium"
+summarized_thinking = true
+max_tokens = 16000
+input_per_mtok = 2.0
+output_per_mtok = 10.0
+cache_write_per_mtok = 2.50
+cache_read_per_mtok = 0.20
+
+[models.catalog."haiku-5.5"]
+id = "claude-haiku-5-5"
+effort = "medium"
+summarized_thinking = true
+max_tokens = 16000
+input_per_mtok = 0.10
+output_per_mtok = 0.50
+cache_write_per_mtok = 0.125
+cache_read_per_mtok = 0.01
+
+[news]
+enabled = true
+model = "sonnet-5.5"
+max_searches = 6
+tool_type = "web_search_20260318"
+search_cost_usd = 0.01
+
+[risk]
+max_weight_per_market = 0.20
+max_gross = 1.5
+max_net = 1.0
+max_new_risk_per_cycle = 0.6
+min_trade_weight = 0.02
+daily_loss_limit = 0.04
+max_drawdown = 0.20
+flip_cooldown_hours = 12
+pre_weekend_max_weight = 0.10
+max_mark_oracle_deviation = 0.01
+stop_min_pct = 1.0
+stop_max_pct = 12.0
+default_stop_pct = 5.0
+
+[risk.class_caps]
+equity_index = 0.6
+stock = 0.6
+commodity = 0.4
+fx = 0.3
+crypto = 0.4
+
+[execution]
+exchange_leverage = 5
+min_order_usd = 11.0
+mainnet_slippage = 0.01
+testnet_slippage = 0.05
+max_price_gap = 0.05
+max_live_equity_usd = 1000.0
+
+[paper]
+slippage_bps = 5.0
+core_taker_fee = 0.00045
+xyz_taker_fee = 0.00009
+
+[[universe]]
+symbol = "xyz:SP500"
+display_name = "S&P 500"
+asset_class = "equity_index"
+tradfi_hours = true
+
+[[universe]]
+symbol = "xyz:XYZ100"
+display_name = "XYZ US 100"
+asset_class = "equity_index"
+tradfi_hours = true
+
+[[universe]]
+symbol = "xyz:NVDA"
+display_name = "NVIDIA"
+asset_class = "stock"
+tradfi_hours = true
+
+[[universe]]
+symbol = "xyz:AAPL"
+display_name = "Apple"
+asset_class = "stock"
+tradfi_hours = true
+
+[[universe]]
+symbol = "xyz:MSFT"
+display_name = "Microsoft"
+asset_class = "stock"
+tradfi_hours = true
+
+[[universe]]
+symbol = "xyz:TSLA"
+display_name = "Tesla"
+asset_class = "stock"
+tradfi_hours = true
+
+[[universe]]
+symbol = "xyz:GOLD"
+display_name = "Gold"
+asset_class = "commodity"
+tradfi_hours = true
+
+[[universe]]
+symbol = "xyz:CL"
+display_name = "WTI Crude Oil"
+asset_class = "commodity"
+tradfi_hours = true
+
+[[universe]]
+symbol = "xyz:JPY"
+display_name = "USD/JPY"
+asset_class = "fx"
+tradfi_hours = true
+
+[[universe]]
+symbol = "BTC"
+display_name = "Bitcoin"
+asset_class = "crypto"
+tradfi_hours = false
+
+[[universe]]
+symbol = "ETH"
+display_name = "Ether"
+asset_class = "crypto"
+tradfi_hours = false

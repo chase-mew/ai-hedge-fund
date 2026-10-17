@@ -1,4 +1,14 @@
-node_modules
+.venv/
+node_modules/
+__pycache__/
+*.pyc
 .env
-dist
 debug.txt
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+journal/
+site/
+dist/
+BUILD_PLAN.md
