@@ -272,7 +272,12 @@
         animation: false,
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: "bottom" } },
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10, font: { size: 12 } }
+          }
+        },
         scales: {
           x: { ticks: { maxTicksLimit: 6 }, grid: { color: grid } },
           y: { grid: { color: grid } }

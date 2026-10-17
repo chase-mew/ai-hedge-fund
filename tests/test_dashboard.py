@@ -66,6 +66,7 @@ class FakeJournal:
         paper: dict[str, PaperAccount] | None = None,
         live_bookkeeping: Bookkeeping | None = None,
     ) -> None:
+        self.root = Path(".")
         self._cycles = list(cycles or [])
         self._equity = list(equity or [])
         self._scores = scores

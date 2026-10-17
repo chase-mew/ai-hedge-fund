@@ -56,6 +56,8 @@ _CLASS_LABELS: dict[AssetClass, str] = {
 
 
 class JournalView(Protocol):
+    root: Path
+
     def load_cycles(self, limit: int | None = None) -> list[CycleRecord]: ...
 
     def load_equity(self) -> list[EquityPoint]: ...
@@ -260,7 +262,7 @@ def build_site(journal: JournalView, config: FundConfig, out_dir: Path, now: dat
         cycle_dir.mkdir(exist_ok=True)
         template = env.get_template("cycle.html.j2")
         for record in cycles[-30:]:
-            rendered = template.render(page=_cycle_page(config, record, moment))
+            rendered = template.render(page=_cycle_page(journal.root, config, record, moment))
             (cycle_dir / f"{_slug(record.cycle_id)}.html").write_text(rendered, encoding="utf-8")
     _write_data(out_dir, moment, scores, equity)
     shutil.copyfile(STYLESHEET, out_dir / "style.css")
@@ -319,7 +321,7 @@ def _index_page(
         decision_note=decision_note,
         market_view=market_view,
         decisions=decisions,
-        reasoning=_read_transcript(run.transcript_path) if run is not None else "",
+        reasoning=_read_transcript(journal.root, run.transcript_path) if run is not None else "",
         cycles=_recent(cycles, config_id),
     )
 
@@ -354,7 +356,7 @@ def _blank_page(name: str, halt: str | None, built: str) -> IndexPage:
     )
 
 
-def _cycle_page(config: FundConfig, record: CycleRecord, moment: datetime) -> CyclePage:
+def _cycle_page(journal_root: Path, config: FundConfig, record: CycleRecord, moment: datetime) -> CyclePage:
     news = record.snapshot.news
     costs, total = _cost_rows(record)
     return CyclePage(
@@ -370,7 +372,7 @@ def _cycle_page(config: FundConfig, record: CycleRecord, moment: datetime) -> Cy
         news_text=None if news is None else news.text,
         news_compiled=None if news is None else _when(news.compiled_at),
         sources=[] if news is None else [_source(item) for item in news.sources],
-        configs=[_config_block(run, config.universe) for run in record.runs],
+        configs=[_config_block(journal_root, run, config.universe) for run in record.runs],
         costs=costs,
         cost_total=total,
         errors=list(record.errors),
@@ -565,7 +567,7 @@ def _recent(cycles: list[CycleRecord], config_id: str) -> list[CycleLink]:
     return links
 
 
-def _config_block(run: ConfigRun, universe: list[MarketSpec]) -> ConfigBlock:
+def _config_block(journal_root: Path, run: ConfigRun, universe: list[MarketSpec]) -> ConfigBlock:
     market_view = None
     decisions: list[DecisionRow] = []
     if run.decision is not None or run.gate is not None:
@@ -578,7 +580,7 @@ def _config_block(run: ConfigRun, universe: list[MarketSpec]) -> ConfigBlock:
         market_view=market_view,
         decisions=decisions,
         orders=[_order_row(item) for item in run.outcomes],
-        reasoning=_read_transcript(run.transcript_path),
+        reasoning=_read_transcript(journal_root, run.transcript_path),
         cost=_usd(sum(item.cost_usd for item in run.usage)),
     )
 
@@ -692,10 +694,12 @@ def _write_data(
     (out_dir / "data.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
-def _read_transcript(path: str | None) -> str:
+def _read_transcript(journal_root: Path, path: str | None) -> str:
     if not path:
         return ""
     file = Path(path)
+    if not file.is_absolute():
+        file = journal_root / file
     if not file.is_file():
         return ""
     try:
@@ -871,9 +875,15 @@ def _role_rank(portfolio_id: str, champion_portfolio_id: str) -> int:
 
 
 def _series_label(portfolio_id: str, champion_portfolio_id: str) -> str:
+    if portfolio_id.startswith("config:"):
+        name = portfolio_id.removeprefix("config:")
+    elif portfolio_id.startswith("baseline:"):
+        name = portfolio_id.removeprefix("baseline:")
+    else:
+        name = portfolio_id
     if portfolio_id == champion_portfolio_id:
-        return f"{portfolio_id} (champion)"
-    return portfolio_id
+        return f"{name} (champion)"
+    return name
 
 
 def _halt_text(state: dict[str, str] | None) -> str | None:
